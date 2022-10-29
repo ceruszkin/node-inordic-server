@@ -1,12 +1,15 @@
 //Документация NODE
 //https://nodejs.org/dist/latest-v16.x/docs/api/synopsis.html#example
-
 //Импортируем плагины
 const express = require("express");
 const mysql = require("mysql")
-
+//Добавляем плагин multer, для работы с формами и файлами в node.js
+const multer = require('multer')
+//Настраивае, куда будем сохранять файл
+const uploadFromForm = multer({dest: 'uploads/'})
+//Устанавливаем название файла на форме
+const fileFromForm = uploadFromForm.single('MYFILE')
 //создадим подключение к базе данных
-
 // 1 - Создадим функцию-конфигурацию для подключения
 function config () {
     return {
@@ -20,14 +23,14 @@ function config () {
       acquireTimeout  : 60 * 60 * 1000,
       timeout         : 60 * 60 * 1000
     }
-  }
-
-  // 2 - Создадим подключение
-  const connect = mysql.createPool(config())
-
+}
+// 2 - Создадим подключение
+const connect = mysql.createPool(config())
 //Инициализируем приложение express
 const app = express();
-
+//Распределяем роутеры по файлам
+const getAllGood = require('./routes/get-all-good.js')
+getAllGood(app, connect)
 /**
  * План для построения интернет магазина (что нужно добавить)
  * 
@@ -50,7 +53,6 @@ const app = express();
  * ДЗ 28 урок
  * Прописать все базовые (указанные выше) маршруты
  */
-
 //1 - Корневой маршрут
 //Первый базовый маршрут приложения
 app.get(
@@ -96,8 +98,6 @@ app.get(
         )
     }
 )
-
-
 //Маршрут для проверки поключения к базе данных
 app.get(
     '/connect',
@@ -112,52 +112,6 @@ app.get(
 
     }
 )
-
-
-
-/**
- * Маршрут для получения всех товаров:
- * Автор: Румянцев Александр
- * Описание: Возвращает JSON со спском всех товаров
- * Версия: v1
- * Метод: GET
- * Пример работы с запросом:
- * Ввести в адресную строку - http://localhost:3000/get_all_good
- */
-app.get('/get_all_good', function(request, response){
-    
-    //Составим запрос для базы данных
-    // SELECT - выборка (получить), ключевое слово
-    // * - обозначение всех полей в базе
-    // FROM - ключевое слово, означает откуда
-    // goods - название таблицы в базе данных
-    const sql = 'SELECT * FROM goods'
-
-    //Отправить запрос на серве
-    // для отправки запроса используем функцю query, передаем первым параметром запрос, а вторым 
-    connect.query(
-        sql,
-        (error, result) => {
-            //Если есть ошибка, выведем ее
-            if(error){
-                //Выводим ошибку
-                response.send(
-                    error
-                )
-            //если ошибки нет
-            }else{
-                //отправляем результат запроса на экран
-                response.send(
-                    //Предварительно, через метод JSON.stringify, преобразуем объект в строку JSON
-                    JSON.stringify(result)
-                )
-            }
-        }
-    )
-})
-
-
-
 /**
  * Маршрут для получения оного товара:
  * Автор: Румянцев Александр
@@ -181,9 +135,6 @@ app.get('/get_item', function(req, res){
         err ? res.send(err) : res.send(JSON.stringify(result))
     })
 })
-
-
-
 /**
  * Маршрут для удаления оного товара:
  * Автор: Румянцев Александр
@@ -204,7 +155,6 @@ app.get('/get_item', function(req, res){
         err ? res.send(err) : res.send(JSON.stringify(result))
     })
  }) 
-
 /**
  * Маршрут для добавления оного товара:
  * Автор: Румянцев Александр
@@ -213,10 +163,10 @@ app.get('/get_item', function(req, res){
  * Метод: POST
  * Пример работы с запросом:
  */
-app.post('/add_item', function(req, res){
+app.post('/add_item', fileFromForm, function(req, res){
     //Тут не можем чистать данных с формы без дополнительных плагинов
-    console.log(req)
-    console.log(req)
+    //Установил плагин multer, для чтения формы и передачи файлов
+    console.log(req.body.TITLE)
     res.send('Заглушка для добавления товара')
 })
 
@@ -235,7 +185,7 @@ app.get('/form_add_item', function(req, res){
             <h1>
                Тестовая форма, для маршрута - add_item
             </h1>
-            <form action='/add_item' method='post'>
+            <form enctype="multipart/form-data"  action='/add_item' method='post'>
                 <input type='text' name='ID'/>
                 <input type='text' name='TITLE'/>
                 <input type='text' name='DISCR'/>
@@ -247,10 +197,8 @@ app.get('/form_add_item', function(req, res){
         `
     )
 })
-
-
 /**
- * Маршрут дляредактирования оного товара:
+ * Маршрут для редактирования оного товара:
  * Автор: Румянцев Александр
  * Описание: Возвращает JSON с полями, которые описывают успешное редактирования товара в БД 
  * Версия: v1
@@ -263,8 +211,6 @@ app.get('/form_add_item', function(req, res){
     console.log(req)
     res.send('Заглушка для редактирования товара')
 })
-
-
 /**
  * Маршрут для редактирования оного товара:
  * Автор: Румянцев Александр
@@ -279,7 +225,7 @@ app.get('/form_add_item', function(req, res){
             <h1>
                Тестовая форма, для маршрута - edit_item
             </h1>
-            <form action='/edit_item' method='post'>
+            <form enctype="multipart/form-data"  action='/edit_item' method='post'>
                 <input type='text' name='ID'/>
                 <input type='text' name='TITLE'/>
                 <input type='text' name='DISCR'/>
