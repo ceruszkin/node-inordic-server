@@ -29,8 +29,8 @@ const connect = mysql.createPool(config())
 //Инициализируем приложение express
 const app = express();
 //Распределяем роутеры по файлам
-const getAllGood = require('./routes/get-all-good.js')
-getAllGood(app, connect)
+require('./routes/get-all-good.js')(app, connect)
+
 /**
  * План для построения интернет магазина (что нужно добавить)
  * 
