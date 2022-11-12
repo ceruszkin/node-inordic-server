@@ -52,11 +52,11 @@ module.exports = (app, connect) => {
                 Тестовая форма, для маршрута - add_item
                 </h1>
                 <form enctype="multipart/form-data"  action='/add_item' method='post'>
-                    <input type='text' name='TITLE'/>
-                    <input type='text' name='DISCR'/>
-                    <input type='text' name='PRICE'/>
-                    <input type='text' name='COUNT'/>
-                    <input type='text' name='IMG'/>
+                    <input placeholder='TITLE' type='text' name='TITLE'/>
+                    <input placeholder='DISCR' type='text' name='DISCR'/>
+                    <input placeholder='PRICE' type='text' name='PRICE'/>
+                    <input placeholder='COUNT' type='text' name='COUNT'/>
+                    <input type='text' placeholder='IMG' name='IMG'/>
                     <input value='Сохранить' type='submit'/>
                 </form>
             `
