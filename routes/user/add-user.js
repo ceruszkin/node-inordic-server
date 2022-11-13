@@ -34,6 +34,8 @@ module.exports = (app, connect) => {
         
         //Стандартная конструкция для отправки запроса в базу
         connect.query(sql, (err, result) => {
+            //добавляем сообщение, при успешном взаимодействии с БД
+            result.message = 'Пользователь успешно добавлен в БД'
             err ? res.send(err) : res.send(JSON.stringify(result))
         })
 

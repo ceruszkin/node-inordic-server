@@ -224,6 +224,7 @@ require('./routes/good/edit-item.js')(app, connect)
 
 //Роуты для пользовтелей
 require('./routes/user/add-user')(app, connect)
+require('./routes/user/get-all-users')(app, connect)
 
 //Начинаем прослушивать определенный порт
 app.listen(3000);
