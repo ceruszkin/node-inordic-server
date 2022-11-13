@@ -45,7 +45,42 @@ module.exports = class WorkerDataBase{
             }
         )
     }
-    get(){
+    get(id){
+        //Абстрактный запрос к базе данных
+        const sql = `SELECT * FROM ${this.name_table} WHERE ID='${id}'`;
+        this.getConnect().query(
+            sql,
+            (error, result) => {
+                if(error){
+                    //Выводим ошибку
+                    this.response.send(
+                        error
+                    )
+                //если ошибки нет
+                }else{
+                    //отправляем результат запроса на экран
+                    this.response.send(
+                        //Предварительно, через метод JSON.stringify, преобразуем объект в строку JSON
+                        JSON.stringify(result)
+                    )
+                }
+            }
+        )
+    }
+    add(data){
+         let sql = `INSERT INTO '${this.name_table}' `
+         //Сгенерировать запрос для добавления пользователей в БД
+         //const sql = 'INSERT INTO `users` (`ID`, `NAME`, `SURNAME`, `IMG`, `EMAIL`, `PHONE`, `LOGIN`, `PASSWORD`, `ROLE` ) VALUES ("'+ id +'", "'+ name +'", "'+ surname +'", "'+ img +'", "'+ email +'", "' + phone + '", "' + login + '", "' + password + '", "' + role + '")';
+         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in
+         for(const field in data){
+             console.log('Название поля:', field)
+             console.log('Значение поля:', data[field])
+         } 
 
+        sql += '';
+
+         this.response.send(
+            sql
+        )
     }
 }

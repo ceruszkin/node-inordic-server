@@ -6,6 +6,8 @@ const uploadFromForm = multer({dest: 'uploads/'})
 const fileFromForm = uploadFromForm.single('MYFILE')
 const uuid = require("uuid")
 
+const WorkerTableUser = require('../../services/worker-tables/users')
+
 module.exports = (app, connect) => {
 
     /**
@@ -16,9 +18,24 @@ module.exports = (app, connect) => {
      * Метод: POST
      * Пример работы с запросом:
      */
-     app.post('/add_user', fileFromForm, function(req, res){
+     app.post('/users/add', fileFromForm, function(req, res){
 
         //Получим данные с формы
+        const data = {
+            'ID': uuid.v4(),
+            'NAME': req.body.NAME,
+            'SURNAME': req.body.SURNAME,
+            'EMAIL': req.body.EMAIL,
+            'IMG': req.body.IMG,
+            'PHONE': req.body.PHONE,
+            'LOGIN': req.body.LOGIN,
+            'PASSWORD': req.body.PASSWORD,
+            'ROLE': req.body.ROLE,
+        }
+
+        const workerTableUser = new WorkerTableUser(res, req)
+        workerTableUser.add(data)
+        /*
         const id = uuid.v4();
         const name = req.body.NAME;
         const surname = req.body.SURNAME;
@@ -38,7 +55,7 @@ module.exports = (app, connect) => {
             result.message = 'Пользователь успешно добавлен в БД'
             err ? res.send(err) : res.send(JSON.stringify(result))
         })
-
+        */
 
 
      })
@@ -58,7 +75,7 @@ module.exports = (app, connect) => {
                 <h1>
                     Тестовая форма, для маршрута - add_user
                 </h1>
-                <form enctype="multipart/form-data" action='/add_user' method='post'>
+                <form enctype="multipart/form-data" action='/users/add' method='post'>
                     <input placeholder='NAME' type='text' name='NAME'/>
                     <input placeholder='SURNAME' type='text' name='SURNAME'/>
                     <input placeholder='IMG' type='text' name='IMG'/>
