@@ -34,6 +34,7 @@ module.exports = (app, connect) => {
         }
 
         const workerTableUser = new WorkerTableUser(res, req)
+        //
         workerTableUser.add(data)
         /*
         const id = uuid.v4();
