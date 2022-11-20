@@ -1,3 +1,5 @@
+const WorkerTableGood = require('../../services/worker-tables/goods')
+
 //Добавляем плагин multer, для работы с формами и файлами в node.js
 const multer = require('multer')
 //Настраивае, куда будем сохранять файл
@@ -15,16 +17,21 @@ module.exports = (app, connect) => {
      * Метод: POST
      * Пример работы с запросом:
      */
-    app.post('/add_item', fileFromForm, function(req, res){
+    app.post('/goods/add', fileFromForm, function(req, res){
         //Тут не можем чистать данных с формы без дополнительных плагинов
         //Установил плагин multer, для чтения формы и передачи файлов
         //Получим данные с формы
-        const id = uuid.v4();
-        const title = req.body.TITLE;
-        const discr = req.body.DISCR;
-        const price = req.body.PRICE;
-        const img = req.body.IMG;
-        const count = req.body.COUNT;
+        const data = {
+            "ID": uuid.v4(),
+            "TITLE": req.body.TITLE,
+            "DISCR": req.body.DISCR,
+            "PRICE": req.body.PRICE,
+            "IMG": req.body.IMG,
+            "COUNT": req.body.COUNT,
+        }
+
+        const workerTableGood = new WorkerTableGood(res, req)
+        workerTableGood.add(data)
         
         //Сгенерировать запрос для добавления товара в БД
         //INSERT - добавление в БД
@@ -51,7 +58,7 @@ module.exports = (app, connect) => {
                 <h1>
                 Тестовая форма, для маршрута - add_item
                 </h1>
-                <form enctype="multipart/form-data"  action='/add_item' method='post'>
+                <form enctype="multipart/form-data"  action='/goods/add' method='post'>
                     <input placeholder='TITLE' type='text' name='TITLE'/>
                     <input placeholder='DISCR' type='text' name='DISCR'/>
                     <input placeholder='PRICE' type='text' name='PRICE'/>
