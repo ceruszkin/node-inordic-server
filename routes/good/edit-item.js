@@ -1,5 +1,6 @@
 //Добавляем плагин multer, для работы с формами и файлами в node.js
 const multer = require('multer')
+const WorkerTableGood = require('../../services/worker-tables/goods')
 //Настраивае, куда будем сохранять файл
 const uploadFromForm = multer({dest: 'uploads/'})
 //Устанавливаем название файла на форме
@@ -14,25 +15,19 @@ module.exports = (app, connect) => {
      * Метод: POST
      * Пример работы с запросом:
     */
-    app.post('/edit_item', fileFromForm, function(req, res){
+    app.post('/goods/edit', fileFromForm, function(req, res){
         //Тут не можем чистать данных с формы без дополнительных плагинов
-        console.log(req)
-        console.log(req)
+        const data = {
+            "ID": req.body.ID,
+            "TITLE": req.body.TITLE,
+            "DISCR": req.body.DISCR,
+            "PRICE": req.body.PRICE,
+            "IMG": req.body.IMG,
+            "COUNT": req.body.COUNT,
+        }
 
-        const id = req.body.ID;
-        const title = req.body.TITLE;
-        const discr = req.body.DISCR;
-        const price = req.body.PRICE;
-        const img = req.body.IMG;
-        const count = req.body.COUNT;
-
-        //Дз Оптимизировать формирование строки  SQL
-        const sql = "UPDATE `goods` SET `TITLE`='"+title+"',`DISCR`='"+discr+"',`PRICE`='"+price+"',`IMG`='"+img+"',`COUNT`='"+count+"' WHERE `ID`='"+id+"'";
-  
-        //Стандартная конструкция для отправки запроса в базу
-        connect.query(sql, (err, result) => {
-            err ? res.send(err) : res.send(JSON.stringify(result))
-        })
+        const workerTableGood = new WorkerTableGood(res, req)
+        workerTableGood.update(data)
 
     })
     /**
@@ -49,7 +44,7 @@ module.exports = (app, connect) => {
                 <h1>
                 Тестовая форма, для маршрута - edit_item
                 </h1>
-                <form enctype="multipart/form-data" action='/edit_item' method='post'>
+                <form enctype="multipart/form-data" action='/goods/item' method='post'>
                     <input placeholder='ID' type='text' name='ID'/>
                     <input placeholder='TITLE' type='text' name='TITLE'/>
                     <input placeholder='DISCR' type='text' name='DISCR'/>
