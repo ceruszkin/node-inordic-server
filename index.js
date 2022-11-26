@@ -4,6 +4,7 @@
 //Импортируем плагины
 const express = require("express");
 const mysql = require("mysql")
+const WorkerFiles = require("./services/worker-files/index.js")
 
 //создадим подключение к базе данных
 // 1 - Создадим функцию-конфигурацию для подключения
@@ -80,20 +81,20 @@ app.get(
 //Распределяем роутеры по файлам
 
 //Роуты для товаров
-require('./routes/good/get-all-good.js')(app, connect)
-require('./routes/good/get-item.js')(app, connect)
-require('./routes/good/del-item.js')(app, connect)
-require('./routes/good/add-item.js')(app, connect)
-require('./routes/good/edit-item.js')(app, connect)
+require('./routes/good/get-all-good.js')(app)
+require('./routes/good/get-item.js')(app)
+require('./routes/good/del-item.js')(app)
+require('./routes/good/add-item.js')(app)
+require('./routes/good/edit-item.js')(app)
 
 //Роуты для пользовтелей
-require('./routes/user/add-user')(app, connect)
-require('./routes/user/get-all-users')(app, connect)
+require('./routes/user/add-user')(app)
+require('./routes/user/get-all-users')(app)
 require('./routes/user/get-user')(app)
 require('./routes/user/edit-user')(app)
 
 //Роут для отправки писем
-require('./routes/mail/index')(app)
+require('./routes/mail/index.js')(app)
 
 //Начинаем прослушивать определенный порт
 app.listen(3000);

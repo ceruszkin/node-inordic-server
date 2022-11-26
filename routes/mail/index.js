@@ -5,37 +5,18 @@ const uploadFromForm = multer({dest: 'uploads/'})
 //Устанавливаем название файла на форме
 const fileFromForm = uploadFromForm.single('MYFILE')
 
-const nodemailer = require('nodemailer')
+const WorkerForMail = require('../../services/worker-for-mail/index.js')
 
 module.exports = (app) => {
     app.post("/mail/send/", fileFromForm, function(req, res){
-        const messageToManager = req.body.TEXT
+        const messageToManager = req.body.TEXT;
+        console.log('WorkerForMail', WorkerForMail)
+        const workerForMail = new WorkerForMail(res, req)
 
-        let transporter = nodemailer.createTransport({
-            host: 'smtp.yandex.ru',
-            port: 465,
-            secure: 465,
-            auth: {
-                user: "inordic2022",
-                pass: "inordic"
-            }
-        });
-
-        let mailOptions = {
-            from: "'inordic2022' <inordic2022@yandex.ru",
-            to: "r-sasha@list.ru",
-            subject: "Письмо от магазина iNordicShop",
-            html: messageToManager
-        };
-
-        transporter.sendMail(mailOptions, (error,info)=> {
-            if (error){
-                res.send(error);
-            }
-            res.send('Message %s sent: %s', info.messageId, info.response)
-        })
+        workerForMail.sendMail(messageToManager)
+       
     })
-
+   
     app.get("/mail/form", function(req, res){
         res.send(
             `
