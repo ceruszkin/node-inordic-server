@@ -3,6 +3,7 @@
 
 //Импортируем плагины
 const express = require("express");
+const fs = require('fs')
 const mysql = require("mysql")
 const WorkerFiles = require("./services/worker-files/index.js")
 
@@ -78,8 +79,15 @@ app.get(
     }
 )
 
+const NAME_FOLDER_ROUTES = 'routes'
 //Распределяем роутеры по файлам
-
+const folderFromRoutes = fs.readdirSync(`./${NAME_FOLDER_ROUTES}`);
+folderFromRoutes.map((folderName) => {
+    const folderFromInRoutes = fs.readdirSync(`./${NAME_FOLDER_ROUTES}/${folderName}/`)
+    folderFromInRoutes.map((fileName) => {
+        require(`./${NAME_FOLDER_ROUTES}/${folderName}/${fileName}`)(app)
+    })
+})
 //Роуты для товаров
 require('./routes/good/get-all-good.js')(app)
 require('./routes/good/get-item.js')(app)
